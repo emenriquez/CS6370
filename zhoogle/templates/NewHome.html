@@ -1,0 +1,43 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href='{% static "templatemo-style.css" %}'>
+    <style>
+    h1 {text-align:center;}
+    a:link {
+  color: white;
+    }
+    a:visited {
+        color: white;
+    }
+    </style>
+</head>
+<p style="text-align:center;"><a href='/'><img src="{% static 'ZhoogleLogo.png' %}"></a></p>
+<h1>The Best Search Engine</h1>
+
+<form align='center'>
+{{ search.as_p }}
+<input type='submit' value='Search!' />
+</form>
+
+{% if request.GET %}
+    <p>Your Search: {{query_string}}</p>
+
+    <p># of Search Results: {{ documents|length }}</p>
+
+    {% for document, score in documents %}
+        <p><a href='https://{{document|slice:"4:"}}'>{{document}}</a></p>
+        <p style="font-size:15%;">CosSim Score: {{score}}</p>
+    {% endfor %}
+
+    <p>-------------------------------------------</p>
+
+    <h2>End of search results</h2>
+
+{% else %}
+<h2>Search Tips:</h2>
+<li>To enforce that all results must contain a word, use "and" before your search term. For example "best and man"</li>
+<li>To exclude any terms, use "not" followed by your term. For example, "best not man" will exclude any results with "man"</li>
+<li>Phrasal Search: If you type a query in quotes, for example "Submissions regarding" only results containing that phrase will be returned!</li>
+<li>NOTE: Phrasal Search is currently in beta, the safety of the user cannot currently be guaranteed while using this feature</li>
+{% endif %}
+

@@ -1,0 +1,43 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" type="text/css" href='{% static "templatemo-style.css" %}'>
+    <style>
+    h1 {text-align:center;}
+    a:link {
+  color: white;
+    }
+    a:visited {
+        color: white;
+    }
+    </style>
+</head>
+<p style="text-align:center;"><a href='/'><img src="{% static 'ZhoogleLogo.png' %}"></a></p>
+<h1>The Best Search Engine</h1>
+
+<form align='center'>
+{{ search.as_p }}
+<input type='submit' value='Search!' />
+</form>
+
+{% if request.GET %}
+    {{query_string}}
+
+    <p># of Search Results: {{ documents|length }}</p>
+
+    {% for document in documents %}
+        <p><a href='result?doc={{document}}'>{{document}}</a></p>
+    {% endfor %}
+
+    <p>-------------------------------------------</p>
+
+    <h2>End of search results</h2>
+
+    {{scores}}
+
+{% else %}
+<h2>Search Tips:</h2>
+<li>Entering a string of multiple words will return all results that have any of those words</li>
+<li>To enforce that all results must contain a word, use "AND" before your search term. For example "best AND man"</li>
+<li>To exclude any terms, type "-" followed by your term. For example, "best -man" will exclude any results with "man"</li>
+{% endif %}
+

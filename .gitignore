@@ -1,0 +1,8 @@
+.DS_Store
+.vscode/
+cs6370/
+*.json
+rhf/
+*.zip
+zhoogle/templates/Jan
+*.sqlite3
