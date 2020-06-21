@@ -3,18 +3,23 @@
     <link rel="stylesheet" type="text/css" href='{% static "templatemo-style.css" %}'>
     <style>
     h1 {text-align:center;}
+    div {
+    width: 600px;
+    word-wrap: break-word;
+    }
+
     a:link {
-  color: white;
+  color: #14ffec;
     }
     a:visited {
-        color: white;
+        color: #f1bbd5;
     }
     </style>
 </head>
 <p style="text-align:center;"><a href='/'><img src="{% static 'ZhoogleLogo.png' %}"></a></p>
 <h1>The Best Search Engine</h1>
 
-<form align='center'>
+<form align='center' size="40">
 {{ search.as_p }}
 <input type='submit' value='Search!' />
 </form>
@@ -22,16 +27,23 @@
 {% if request.GET %}
     <p>Your Search: {{query_string}}</p>
 
-    <p># of Search Results: {{ documents|length }}</p>
+    
+    {% if documents|length >= 30 %}
+        <p># of Search Results: {{ documents|length }}+</p>
+    {% else %}
+        <p># of Search Results: {{ documents|length }}</p>
+    {% endif %}
 
     {% for document, score in documents %}
-        <p><a href='https://{{document|slice:"4:"}}'>{{document}}</a></p>
-        <p style="font-size:15%;">CosSim Score: {{score}}</p>
+        <div style="margin:30"><h3 style="margin:0"><a href='https://{{document.id|slice:"4:"}}'>{{document.title}}</a></h3>
+        <p style="margin:0">{{document.snippet}}</p>
+        <p style="font-size:15%">CosSim Score: {{score}}</p></div>
     {% endfor %}
 
     <p>-------------------------------------------</p>
 
     <h2>End of search results</h2>
+    <p>Maximum results are currently limited to 30 to improve user experience. More results coming soon!</p>
 
 {% else %}
 <h2>Search Tips:</h2>

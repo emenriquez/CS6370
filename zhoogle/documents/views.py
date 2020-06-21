@@ -56,7 +56,7 @@ def RankResults(query, results):
     cosSimScore = {}
 
     # convert set to Queryset
-    primary_keys = [result for result in results]
+    primary_keys = [result for result in results][:30]
     results = Occurrence.objects.filter(doc_id__in=primary_keys)
 
     # Preprocessing of query
@@ -79,11 +79,17 @@ def RankResults(query, results):
             result_tf_idf = sum(temp_result.filter(word=word).values_list('tf_idf', flat=True))
             innerProduct = tf_idf[word]*result_tf_idf
             if doc not in cosSimScore:
+                doc = Document.objects.get(id=doc)
                 cosSimScore[doc] = innerProduct / (doc_vector_length*query_vector_length)
             else:
+                doc = Document.objects.get(id=doc)
                 cosSimScore[doc] += innerProduct / (doc_vector_length*query_vector_length)        
             
     rankings = sorted(cosSimScore.items(), key=lambda x: x[1], reverse=True)
+
+    # convert sorted list of items back to Document items
+
+
     return rankings
 
 def PhrasalSearch(query):
@@ -98,6 +104,10 @@ def PhrasalSearch(query):
     for word in phrase:
         temp_docs = set(Occurrence.objects.filter(word=word).values_list('doc_id', flat=True))
         documents.append(temp_docs)
+    
+    if len(documents) == 0:
+        return []
+
     document_set = set.intersection(*documents)
     hits = Occurrence.objects.filter(doc_id__in=document_set).filter(word__in=phrase)
 
@@ -128,7 +138,7 @@ def PhrasalSearch(query):
 
     scores = "I'm pretty sure this is what you're looking for"
 
-    final_result = [(doc, scores) for doc in final_document_results]
+    final_result = [(Document.objects.get(id=doc), scores) for doc in final_document_results]
 
     return final_result
 
