@@ -16,10 +16,32 @@ for doc in documents.keys():
 with open('zhoogle/documents/fixtures/documents.json', 'w') as f:
     json.dump(processed_docs, f)
 
-# Read Corpus dictionary and convert it into format compatible with Django import
-with open('rhf_corpus.json', 'r') as f:
-    corpus = json.load(f)
 
+
+def reduceVocabulary(word_json='rhf_corpus.json', min_frequency=5, max_frequency=5000):
+    '''
+    This function takes in a full list of search terms and drastically reduces the size by removing words with low frequency.
+    Cutoff frequency can be set by the min_frequency input value.
+    Returns a dictionary with reduced size.
+    '''
+    with open(word_json, 'r') as f:
+        data = json.load(f)
+    
+    unwanted_words = []
+
+    for word in data.keys():
+        if data[word]['df'] < min_frequency or data[word]['df'] > max_frequency:
+            unwanted_words.append(word)
+    
+    for word in unwanted_words:
+        data.pop(word)
+
+    return data
+
+# Read Corpus dictionary and reduce the dictionary size by removing words that occur less than 5 times (to increase speed)
+corpus = reduceVocabulary('rhf_corpus.json', min_frequency=5, max_frequency=10000)
+
+# convert reduced vocabulary into format compatible with Django import
 processed_words = []
 processed_occurrences = []
 for word in corpus.keys():
@@ -38,7 +60,7 @@ for word in corpus.keys():
                 'doc_id': hits['doc_id'],
                 'freq': hits['freq'],
                 'tf_idf': hits['tf_idf'],
-                'locations': hits['locations'],
+                'locations': hits['locations'], 
             }
         }
 

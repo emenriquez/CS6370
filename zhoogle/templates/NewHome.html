@@ -28,23 +28,21 @@
     <p>Your Search: {{query_string}}</p>
 
     
-    {% if documents|length >= 30 %}
+    {% if documents|length >= 100 %}
         <p># of Search Results: {{ documents|length }}+</p>
     {% else %}
         <p># of Search Results: {{ documents|length }}</p>
     {% endif %}
 
-    {% for document, score in documents %}
+    {% for document in documents %}
         <div style="margin:30"><h3 style="margin:0"><a href='https://{{document.id|slice:"4:"}}'>{{document.title}}</a></h3>
-        <p style="margin:0">{{document.snippet}}</p>
-        <p style="font-size:15%">CosSim Score: {{score}}</p></div>
+        <p style="margin:0">{{document.snippet}}</p></div>
     {% endfor %}
 
     <p>-------------------------------------------</p>
 
     <h2>End of search results</h2>
-    <p>Maximum results are currently limited to 30 to improve user experience. More results coming soon!</p>
-
+    
 {% else %}
 <h2>Search Tips:</h2>
 <li>To enforce that all results must contain a word, use "and" before your search term. For example "best and man"</li>

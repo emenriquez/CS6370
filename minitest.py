@@ -1,12 +1,19 @@
 import json
 
-with open('rhf_corpus.json', 'r') as f:
-    data = json.load(f)
+def reduceVocabulary(word_list='rhf_corpus.json'):
+    with open(word_list, 'r') as f:
+        data = json.load(f)
+    
+    unwanted_words = []
 
-counter = 0
+    for word in data.keys():
+        if data[word]['df'] > 5000 or data[word]['df'] < 5:
+            unwanted_words.append(word)
+    
+    for word in unwanted_words:
+        data.pop(word)
 
-for word in data.keys():
-    # if data[word]['df'] < 5:
-        counter += 1
+    return data
 
-print(counter)
+new_list = reduceVocabulary('rhf_corpus.json')
+print(len(new_list))
