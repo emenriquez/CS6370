@@ -4,7 +4,7 @@
     <style>
     h1 {text-align:center;}
     div {
-    width: 600px;
+    width: 90%;
     word-wrap: break-word;
     }
 
@@ -13,6 +13,20 @@
     }
     a:visited {
         color: #f1bbd5;
+    }
+    .column {
+    float: left;
+    width: 50%;
+    }
+
+    .right {
+    width: 50%;
+    }
+
+    .row:after {
+    content: "";
+    display: table;
+    clear: both;
     }
     </style>
 </head>
@@ -25,29 +39,51 @@
 </form>
 
 {% if request.GET %}
-    <p>Your Search: {{query_string}}</p>
+    <span>
+        <div class='column left'>
+            <p>Your Search: {{query_string}}</p>
 
-    
-    {% if documents|length >= 100 %}
-        <p># of Search Results: {{ documents|length }}+</p>
-    {% else %}
-        <p># of Search Results: {{ documents|length }}</p>
-    {% endif %}
+            
+            {% if documents|length >= 100 %}
+                <p># of Search Results: {{ documents|length }}+</p>
+            {% else %}
+                <p># of Search Results: {{ documents|length }}</p>
+            {% endif %}
 
-    {% for document in documents %}
-        <div style="margin:30"><h3 style="margin:0"><a href='https://{{document.id|slice:"4:"}}'>{{document.title}}</a></h3>
-        <p style="margin:0">{{document.snippet}}</p></div>
-    {% endfor %}
+            {% for document in documents %}
+                <div style="margin:30"><h3 style="margin:0"><a href='https://{{document.id|slice:"4:"}}'>{{document.title}}</a></h3>
+                <p style="margin:0">{{document.snippet}}</p></div>
+            {% endfor %}
 
-    <p>-------------------------------------------</p>
+            <p>-------------------------------------------</p>
 
-    <h2>End of search results</h2>
+            <h2>End of search results</h2>
+        </div>
+        <div class='column right' >
+            <p>Your Reformulated Search: {{query_string}}{% for keyword in keywords %}<b>  +{{keyword}}</b>{% endfor %}</p>
+
+            {% if newResults|length >= 100 %}
+                <p># of Reformulated Search Results: {{ newResults|length }}+</p>
+            {% else %}
+                <p># of Reformulated Search Results: {{ newResults|length }}</p>
+            {% endif %}
+
+            {% for result in newResults %}
+                <div style="margin:30"><h3 style="margin:0"><a href='https://{{result.id|slice:"4:"}}' style="color:#9370DB">{{result.title}}</a></h3>
+                <p style="margin:0">{{result.snippet}}</p></div>
+            {% endfor %}
+
+            <p>-------------------------------------------</p>
+
+            <h2>End of search results</h2>
+        </div>
+    </span>
     
 {% else %}
 <h2>Search Tips:</h2>
 <li>To enforce that all results must contain a word, use "and" before your search term. For example "best and man"</li>
 <li>To exclude any terms, use "not" followed by your term. For example, "best not man" will exclude any results with "man"</li>
 <li>Phrasal Search: If you type a query in quotes, for example "Submissions regarding" only results containing that phrase will be returned!</li>
-<li>NOTE: Phrasal Search is currently in beta, the safety of the user cannot currently be guaranteed while using this feature</li>
+<li>Features currently in beta: <b>Reformulated search</b> will attempt to broaden your search with closely related terms</li>
 {% endif %}
 

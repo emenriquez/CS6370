@@ -28,4 +28,15 @@ class Occurrence(models.Model):
     def __str__(self):
         return (f'{self.word}: {self.doc_id}')
 
+class Keyword(models.Model):
+    word = models.ForeignKey('Word', on_delete=models.CASCADE, related_name='root_word')
+    keyword = models.ForeignKey('Word', related_name='keyword', on_delete=models.CASCADE)
+    score = models.FloatField(default=0.0)
 
+    def __str__(self):
+        return (f'{self.word} <- {self.keyword}')
+
+class correlatedDocs(models.Model):
+    doc = models.ForeignKey('Document', on_delete=models.CASCADE, related_name='doc')
+    corrDoc = models.ForeignKey('Document', on_delete=models.CASCADE, related_name='corrDoc')
+    score = models.FloatField(default=0.0)

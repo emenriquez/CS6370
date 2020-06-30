@@ -19,7 +19,5 @@ from documents import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('old', views.Homepage),
-    path('result', views.Result),
     path('', views.NewView)
 ]

@@ -4,7 +4,7 @@ from django.template import loader
 from django.views.generic.base import TemplateView
 from django.db.models import Sum, Q
 
-from .models import Document, Word, Occurrence
+from .models import Document, Word, Occurrence, Keyword, correlatedDocs
 import string
 import math
 from .forms import SearchForm
@@ -161,11 +161,6 @@ def Homepage(request, *args, **kwargs):
     query_string, results = BooleanSearch(query)
     return render(request, "home.html", {'documents': results, 'search': search, 'query_string': query_string})
 
-def Result(request, *args, **kwargs):
-    query = request.GET.get('doc', '')
-    testing = loader.render_to_string(query)
-    return render(request, 'test.html', {'doc': testing})
-
 def NewView(request, *args, **kwargs):
     search = SearchForm(request.POST or None)
     query = request.GET.get('q', '')
@@ -174,4 +169,38 @@ def NewView(request, *args, **kwargs):
     else:
         results = NewSearch(query)
         scores = RankResults(query, results)
-    return render(request, "NewHome.html", {'documents': scores, 'search': search, 'query_string': query})
+        keywords, newQuery = ReformulateQuery(query, scores)
+        
+        reformulatedResults = NewSearch(newQuery)
+        reformulatedScores = RankResults(newQuery, reformulatedResults)
+
+    return render(request,
+     "NewHome.html",
+      {'documents': scores,
+       'search': search,
+        'query_string': query,
+         'keywords': keywords,
+         'newResults': reformulatedScores
+         }
+      )
+
+def ReformulateQuery(query, results):
+    # Preprocessing of query
+    exclude = set(string.punctuation)
+    no_punctuation = ''.join(char.lower() for char in query if char not in exclude)
+    query = no_punctuation.split()
+
+    top_docs = results[:3]
+
+    top_words = Occurrence.objects.filter(doc_id__in=top_docs).exclude(word__in=query).order_by('-tf_idf')
+    
+    top_words = top_words.values_list('word', flat=True)
+
+    keywords = Keyword.objects.filter(word__in=query).filter(keyword__in=top_words).order_by('-score').values_list('keyword', flat=True)
+
+    keywords = list(keywords)[:3]
+
+    newQuery = query + keywords
+    newQuery = ' '.join(newQuery)
+
+    return keywords, newQuery
