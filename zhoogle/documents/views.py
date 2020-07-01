@@ -14,7 +14,7 @@ def NewSearch(input):
     not_results = set()
     # Preprocessing of query
     exclude = set(string.punctuation)
-    no_punctuation = ''.join(char for char in input if char not in exclude)
+    no_punctuation = ''.join(char.lower() for char in input if char not in exclude)
 
     # Add OR terms
     or_query = no_punctuation.split(' or ')
@@ -166,6 +166,8 @@ def NewView(request, *args, **kwargs):
     query = request.GET.get('q', '')
     if '"' in query:
         scores = PhrasalSearch(query)
+        keywords = []
+        reformulatedScores = []
     else:
         results = NewSearch(query)
         scores = RankResults(query, results)
@@ -174,13 +176,16 @@ def NewView(request, *args, **kwargs):
         reformulatedResults = NewSearch(newQuery)
         reformulatedScores = RankResults(newQuery, reformulatedResults)
 
+        recommendations = [['test1', 'test2', 'test3'], ['2ndtest1', '2ndtest2', '2ndtest2'], ['finaltest1', 'finaltest2', 'finaltest3']]
+
     return render(request,
      "NewHome.html",
       {'documents': scores,
        'search': search,
         'query_string': query,
          'keywords': keywords,
-         'newResults': reformulatedScores
+         'newResults': reformulatedScores,
+         'recommendations': recommendations,
          }
       )
 
@@ -204,3 +209,6 @@ def ReformulateQuery(query, results):
     newQuery = ' '.join(newQuery)
 
     return keywords, newQuery
+
+def RecommendContent(results):
+    return None

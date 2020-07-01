@@ -53,6 +53,13 @@
             {% for document in documents %}
                 <div style="margin:30"><h3 style="margin:0"><a href='https://{{document.id|slice:"4:"}}'>{{document.title}}</a></h3>
                 <p style="margin:0">{{document.snippet}}</p></div>
+                {% if forloop.counter0 < 3 %}
+                        <p style="margin-left:40; margin-top:0; margin-bottom:0; font-size:80%">Check out these similar pages:</p>
+                    {% for item in document.correlated %}
+                        <p style="margin-left:40; margin-top:2; margin-bottom:0; font-size:80%"><a href='https://{{item.id|slice:"4:"}}' style="color:#FFFF66">{{item.title}}</a></p>
+                    {% endfor %}
+                    
+                {% endif %}
             {% endfor %}
 
             <p>-------------------------------------------</p>

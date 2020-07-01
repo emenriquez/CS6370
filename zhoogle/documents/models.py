@@ -10,6 +10,15 @@ class Document(models.Model):
 
     def __str__(self):
         return self.id
+    
+    @property
+    def correlated(self):
+        "Returns a custom property of documents"
+        correlated_docs = correlatedDocs.objects.filter(doc=self.id)
+        correlated_docs = correlated_docs.values_list('corrDoc', flat=True).order_by('-score')
+        corrDocObjects = [Document.objects.get(id=result) for result in correlated_docs]
+
+        return corrDocObjects
 
 class Word(models.Model):
     id = models.CharField(primary_key=True, max_length=100, unique=True)
