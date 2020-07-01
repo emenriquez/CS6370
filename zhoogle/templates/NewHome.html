@@ -44,8 +44,8 @@
             <p>Your Search: {{query_string}}</p>
 
             
-            {% if documents|length >= 100 %}
-                <p># of Search Results: {{ documents|length }}+</p>
+            {% if documents|length >= 50 %}
+                <p># of Search Results: 50+</p>
             {% else %}
                 <p># of Search Results: {{ documents|length }}</p>
             {% endif %}
@@ -65,12 +65,13 @@
             <p>-------------------------------------------</p>
 
             <h2>End of search results</h2>
+        {% if keywords %}
         </div>
         <div class='column right' >
             <p>Your Reformulated Search: {{query_string}}{% for keyword in keywords %}<b>  +{{keyword}}</b>{% endfor %}</p>
 
-            {% if newResults|length >= 100 %}
-                <p># of Reformulated Search Results: {{ newResults|length }}+</p>
+            {% if newResults|length >= 50 %}
+                <p># of Reformulated Search Results: 50+</p>
             {% else %}
                 <p># of Reformulated Search Results: {{ newResults|length }}</p>
             {% endif %}
@@ -84,6 +85,8 @@
 
             <h2>End of search results</h2>
         </div>
+        {% endif %}
+        
     </span>
     
 {% else %}

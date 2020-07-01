@@ -4,6 +4,7 @@ from django.template import loader
 from django.views.generic.base import TemplateView
 from django.db.models import Sum, Q
 
+
 from .models import Document, Word, Occurrence, Keyword, correlatedDocs
 import string
 import math
@@ -63,7 +64,7 @@ def RankResults(query, results):
 
     results = results.filter(word__in=query)
     ordered_results = results.values_list('doc_id').annotate(Sum('tf_idf')).order_by('-tf_idf__sum')
-    rankings = [Document.objects.get(id=result[0]) for result in ordered_results[:100]]
+    rankings = [Document.objects.get(id=result[0]) for result in ordered_results[:50]]
 
     return rankings
 
@@ -111,11 +112,9 @@ def PhrasalSearch(query):
         if docscore >= len(phrase):
             final_document_results.append(doc)
 
-    scores = "I'm pretty sure this is what you're looking for"
+    final_result = [Document.objects.get(id=doc) for doc in final_document_results]
 
-    final_result = [(Document.objects.get(id=doc), scores) for doc in final_document_results]
-
-    return final_result
+    return final_result[:50]
 
 # Old search
 def BooleanSearch(input):
@@ -176,8 +175,6 @@ def NewView(request, *args, **kwargs):
         reformulatedResults = NewSearch(newQuery)
         reformulatedScores = RankResults(newQuery, reformulatedResults)
 
-        recommendations = [['test1', 'test2', 'test3'], ['2ndtest1', '2ndtest2', '2ndtest2'], ['finaltest1', 'finaltest2', 'finaltest3']]
-
     return render(request,
      "NewHome.html",
       {'documents': scores,
@@ -185,7 +182,6 @@ def NewView(request, *args, **kwargs):
         'query_string': query,
          'keywords': keywords,
          'newResults': reformulatedScores,
-         'recommendations': recommendations,
          }
       )
 
